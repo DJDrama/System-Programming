@@ -15,9 +15,6 @@ int main(){
 	struct timeval tv;
 	fd_set readfds, writefds;
 	char w_arr[MAX_LENGTH], r_arr[MAX_LENGTH];
-
-	tv.tv_sec = TIMEOUT;
-	tv.tv_usec=0;
 		
 	char *fifo = "/tmp/dj";
 	mkfifo(fifo, 0666);
@@ -25,6 +22,8 @@ int main(){
 	while(1){
 		FD_ZERO(&writefds);
 		FD_SET(STDOUT_FILENO, &writefds);
+		tv.tv_sec = TIMEOUT;
+		tv.tv_usec=0;
 		
 		ret = select(STDOUT_FILENO+1, NULL, &writefds, NULL, &tv);
 		if(ret==-1){
@@ -48,7 +47,8 @@ int main(){
 		
 		FD_ZERO(&readfds);
 		FD_SET(STDIN_FILENO, &readfds);
-		
+		tv.tv_sec = TIMEOUT;
+		tv.tv_usec=0;
 		ret = select(STDIN_FILENO+1, &readfds, NULL, NULL, &tv);
 		if(ret==-1){
 			perror("select");
