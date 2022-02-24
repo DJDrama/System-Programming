@@ -17,7 +17,7 @@ int main(){
 	ret = poll(fds, 2, TIMEOUT * 1000);
 	if(ret == -1){
 		perror("Poll");
-		return 1l
+		return 1;
 	}
 	
 	if(!ret){
