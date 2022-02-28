@@ -1,0 +1,24 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+int main(int argc, char *argv[]){
+	FILE *rfp, *wfp;
+	int c;
+	
+	if((rfp = fopen(argv[1], "r")) == NULL){
+		perror("fopen: argv[1]");
+		return 1;
+	}
+	
+	if((wfp = fopen(argv[2], "w")) == NULL){
+		perror("fopen: argv[2]");
+		return 1;
+	}
+	
+	while((c = fgetc(rfp))!=EOF){
+		fputc(c, wfp);
+	}
+	
+	fclose(rfp);
+	fclose(wfp);
+}
