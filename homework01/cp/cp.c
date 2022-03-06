@@ -4,8 +4,11 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <time.h>
 
 int main(int argc, char *argv[]){
+	clock_t t;
+	t = clock();
 	
 	int rfd, wfd, n;
 	char buf[BUFSIZ];
@@ -32,6 +35,10 @@ int main(int argc, char *argv[]){
 	
 	close(rfd);
 	close(wfd);
+	
+	t = clock() - t;
+	double time_taken = ((double) t) / CLOCKS_PER_SEC;
+	printf("took %f seconds to execute\n", time_taken);
 	return 0;
 }
 
