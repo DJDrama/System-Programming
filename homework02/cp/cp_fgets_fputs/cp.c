@@ -1,7 +1,10 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <time.h>
 
 int main(int argc, char *argv[]){
+	clock_t t;
+	t = clock();
 	FILE *rfp, *wfp;
 	char buf[BUFSIZ];
 	
@@ -23,5 +26,9 @@ int main(int argc, char *argv[]){
 	
 	fclose(rfp);
 	fclose(wfp);
-	
+
+	t = clock() - t;
+	double time_taken = ((double) t) / CLOCKS_PER_SEC;
+	printf("took %f seconds to execute\n", time_taken);
+	return 0;
 }
