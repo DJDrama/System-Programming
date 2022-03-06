@@ -16,8 +16,9 @@ int main(){
 }
 /*
 > ipcs -m
-IPC status from <running system> as of Sun Mar  6 22:52:57 KST 2022
-T     ID     KEY        MODE       OWNER    GROUP
-Shared Memory:
-m  65536 0xffffffff --rw-r--r--       dj    staff
+------ Shared Memory Segments --------
+key        shmid      owner      perms      bytes      nattch     status   
+0xffffffff 11337751   dj           644        1024       0                  
+
+nattch=0 : No process that hs been connected to this shared memory yet.
 */
