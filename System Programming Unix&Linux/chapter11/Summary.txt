@@ -1,0 +1,140 @@
+04 공유 메모리
+	- 공유메모리: 같은 메모리 공간을 2개 이상의 프로세스가 공유하는 것.
+		* 데이터를 주고받을 수 있다.
+		* 읽고 쓸 때 동기화가 필요하다.
+
+	4.1) 공유 메모리 함수
+		- shmget (공유 메모리 식별자 생성)
+		
+			> int shmget(key_t key, size_t size, int shmflg);
+			
+				* key: IPC_PRIVATE 또는 ftok() 함수로 생성한 키
+					$ 공유 메모리 식별자와 관련된 공유 메모리와 데이터 구조체가 새로 생성되는 경우
+						1) key가 IPC_PRIVAT
+						2) key가 0이 아니며 다른 식별자와 관련되어 있지 않고, 플래그(msgflg)에 IPC_CREAT가 설정되어 있는 경우.
+						=> 위 두가지 경우가 아니면 shmget() 함수는 기존 공유 메모리의 식별자를 리턴.
+				
+					$ 이미 공유된 메모리의 식별자를 읽어오는 것이라면 무시됨.
+
+				* size: 공유할 메모리의 크기
+
+				* shmflg: 공유 메모리의 속성을 지정하는 플래그
+					$ IPC_CREAT, IPC_EXCL (man msgget으로 세부내용 확인하고 사용)
+
+			> 공유 메모리 정보를 담고 있는 구조체: shmid_ds, sys/shm.h 파일에 정리되어 있다. (man shmctl으로 확인 가능)
+
+				struct shmid_ds {
+					struct ipc_perm msg_perm;     // IPC 공통 구조체(ipc_perm)다.
+					size_t			shm_segsz;    // 공유 메모리 세그먼트의 크기를 바이트 단위로 나타낸다.
+					time_t			shm_atime;    // 마지막으로 공유 메모리를 연결(shmat)한 시간.
+					time_t			shm_dtime;    // 마지막으로 공유 메모리의 연결을 해제(shmdt)한 시간.
+					time_t			shm_ctime;    // 마지막으로 공유 메모리의 접근 권한을 변경한 시간.
+					pid_tt_t		shm_lpid;;    // 마지막으로 shmop 동작을 한 프로세스의 PID.
+					pid_t 			shm_cpid;     // 공유 메모리를 생성한 프로세스의 PID.
+					shmatt_t		shm_nattch;   // 공유 메모리를 연결하고 있는 프로세스의 개수.
+					...
+				}
+
+			> 새로운 공유 메모리 식별자가 리턴할 때 구조체의 값들.
+				* shm_perm.cuid, shm_perm.uid: 함수를 호출한 프로세스의 유효 사용자 ID로 설정한다.
+				* shm_perm.cgid, shm_perm.gid: 함수를 호출한 프로세스의 유효 그룹 ID로 설정한다.
+				* shm_perm.mode의 하위 9비트: msgflg 값의 하위 9비트로 설정한다.
+				* shm_segsz: size 값으로 설정한다.
+				* shm_lpid, shm_nattch, shm_atime, shm_dtime: 0으로 설정한다.
+				* shm_ctime: 현재 시각으로 설정한다.
+
+		
+		- shmat: 공유 메모리 연결
+
+			> 생성된 공유 메모리를 사용하려면 공유 메모리를 프로세스의 데이터 영역과 연결해야 한다.
+
+			> void *shmat(int shmid, const void *shmaddr, int shmflg);
+
+				* shmid: shmget() 함수로 생성한 공유 메모리 식별자
+				
+				* shmaddr: 공유 메모리를 연결할 주소
+					$ 특별한 경우가 아니면 NULL을 지정한다.
+					$ 값이 NULL이면 시스템이 알아서 적절한 주소에 공유 메모리를 연결한다.
+					$ 만약 NULL이 아니고 shmflg에 SHM_RND가 지정되어 있으면 메모리는 SHMLBA의 가장 가까운 배수의 주소에 연결한다.
+						=> SHMLBA는 메모리 세그먼트의 하위 경계 주솟값.
+					$ 이외의 경우, 메모리 페이지 크기에 맞춰서 연결된다.
+
+				* shmflg: 공유 메모리에 대한 읽기 / 쓰기 권한
+					$ 0이면 공유 메모리에 대해 읽기 / 쓰기 가능.
+					$ SHM_RDONLY면 읽기만 가능.
+					$ SHM_EXEC면 공유된 메모리 세그먼트의 내용을 실행 가능.
+
+				* 수행에 성공하면 연결된 공유 메모리의 시작 주소를 리턴한다.
+
+		
+		- shmdt: 공유 메모리 연결 해제
+
+			> 해당 함수를 사용해 공유 메모리의 연결을 해제(공유 메모리의 사용이 끝날 시)
+
+			> int shmdt(const void *shmaddr);
+
+				* shmaddr: 연결을 해제할 공유 메모리의 시작 주소(시작 주소 = shmat() 함수의 리턴값).
+
+		
+		- shmctl: 공유 메모리 제어
+
+			> int shmctl(int shmid, int cmd, struct shmid_ds *buf);
+
+				* shmid: shmget() 함수로 생성한 공유 메모리 식별자.
+
+				* cmd: 수행할 제어 기능.
+					$ IPC_STAT
+						~ 현재 공유 메모리의 정보를 buf로 지정한 메모리에 저장.
+					
+					$ IPC_SET
+						~ 공유 메모리의 정보 중 shm_perm.uid, shm_perm.gid, shm_perm.mode 값을 세 번째 인자로 지정한 값으로 바꾼다. 
+						  (root 권한이 있거나 유효 사용자 ID인 경우에만 사용 가능.)
+					
+					$ IPC_RMID
+						~ shmid로 지정한 공유 메모리를 제거하고 관련된 데이터 구조체 제거.
+					
+					$ IPC_INFO
+						~ 리눅스에서만 사용 가능. 공유 메모리의 시트템 제한값을 buf에 저장. buf는 shminfo 구조체로 형 변환을 해야한다.
+						<shminfo 구조체(man shmctl에서 확인 가능)>
+							struct shminfo {
+								unsigned long shmmax; // 세그먼트의 최대 크기
+								unsigned long shmmin; // 세그먼트의 최소 크기(항상 1)
+								unsigned long shmmni; // 세그먼트의 최대 개수
+								unsigned long shmseg; // 한 프로세스에 연결될 수 있는 세그먼트의 최대 개수
+								unsigned long shmall; // 시스템 전체에서 공유 메모리로 사용할 수 있는 페이지의 최대 개수
+							}
+
+					$ SHM_INFO
+						~ 리눅스에서만 사용 가능
+						~ 공유 메모리가 사용하는 자원의 정보를 shm_info 구조체에 저장
+						~ shm_info 구조체는 sys/shm.h 파일에 정의되어 있고 man shmctl로 확인 가능.
+
+						struct shm_info {
+							int 		  used_ids;        // 현재 생성된 세그먼트의 개수
+							unsigned long shm_tot;		   // 공유 메모리 페이지의 전체 개수
+							unsigned long shm_rss;		   // 사용 중인 공유 메모리 페이지의 개수
+							unsigned long shm_swp;		   // 스왑된 공유 메모리 페이지의 개수
+							unsigned long swap_attempts;   // 리눅스 2.4부터는 사용하지 않는다.
+							unsigned long swap_successes;  // 리눅스 2.4부터는 사용하지 않는다.
+						}
+
+					$ SHM_LOCK
+						~ 공유 메모리 세그먼트를 잠근다.
+
+					$ SHM_UNLOCK
+						~ 공유 메모리 세그먼트의 잠금을 해제한다.
+
+
+				* buf: 제어 기능에 사용되는 공유 메모리 구조체의 주소.
+
+			> 
+
+
+
+
+
+
+
+
+
+
