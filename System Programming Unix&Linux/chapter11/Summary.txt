@@ -10,7 +10,7 @@
 			
 				* key: IPC_PRIVATE 또는 ftok() 함수로 생성한 키
 					$ 공유 메모리 식별자와 관련된 공유 메모리와 데이터 구조체가 새로 생성되는 경우
-						1) key가 IPC_PRIVAT
+						1) key가 IPC_PRIVATE
 						2) key가 0이 아니며 다른 식별자와 관련되어 있지 않고, 플래그(msgflg)에 IPC_CREAT가 설정되어 있는 경우.
 						=> 위 두가지 경우가 아니면 shmget() 함수는 기존 공유 메모리의 식별자를 리턴.
 				
@@ -20,6 +20,11 @@
 
 				* shmflg: 공유 메모리의 속성을 지정하는 플래그
 					$ IPC_CREAT, IPC_EXCL (man msgget으로 세부내용 확인하고 사용)
+					$ If a shared memory identifier has already been created with key earlier, and the calling process of this shmget() has read and/or write  
+					  permissions to it, then shmget() returns the associated shared memory identifier.
+					$ If a shared memory identifier has already been created with key earlier, and the calling process of this shmget() does not have read and/or 
+					  write permissions to it, then shmget() returns-1 and sets errno to EACCES.
+					$ If a shared memory identifier has not been created with key earlier, then shmget() returns -1 and sets errno to ENOENT.
 
 			> 공유 메모리 정보를 담고 있는 구조체: shmid_ds, sys/shm.h 파일에 정리되어 있다. (man shmctl으로 확인 가능)
 
