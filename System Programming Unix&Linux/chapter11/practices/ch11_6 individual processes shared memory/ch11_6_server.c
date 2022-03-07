@@ -26,6 +26,9 @@ int main(){
 	signal(SIGUSR1, handler);
 
 	printf("Listener wait for Talker\n");
+	sigsuspend(&mask);
+	
+	printf("Listener Start=====\n");
 	shmaddr = shmat(shmid, NULL, 0);
 	strcpy(buf, shmaddr);
 	printf("Listener received : %s\n", buf);

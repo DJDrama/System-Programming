@@ -1,11 +1,11 @@
 #include <sys/mman.h>
-#include <signal.h>
 #include <sys/ipc.h>
 #include <sys/shm.h>
 #include <unistd.h>
 #include <stdio.h>
 #include <string.h>
 #include <signal.h>
+#include <stdlib.h>
 
 int main(int argc, char* argv[]){
 	key_t key;
@@ -24,7 +24,7 @@ int main(int argc, char* argv[]){
 	strcpy(buf, shmaddr);
 
 	printf("Listener said: %s\n", buf);
-	system("ipcs -mo");
+	system("ipcs -m");
 	shmdt(shmaddr);
 	shmctl(shmid, IPC_RMID, NULL); // 공유 메모리 제거
 
