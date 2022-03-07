@@ -20,6 +20,8 @@
 
 				* shmflg: 공유 메모리의 속성을 지정하는 플래그
 					$ IPC_CREAT, IPC_EXCL (man msgget으로 세부내용 확인하고 사용)
+
+					(when shmflg is 0)
 					$ If a shared memory identifier has already been created with key earlier, and the calling process of this shmget() has read and/or write  
 					  permissions to it, then shmget() returns the associated shared memory identifier.
 					$ If a shared memory identifier has already been created with key earlier, and the calling process of this shmget() does not have read and/or 
