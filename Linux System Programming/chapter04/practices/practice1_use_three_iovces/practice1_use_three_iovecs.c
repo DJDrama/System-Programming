@@ -26,9 +26,10 @@ int main(){
 	/* fill out three iovec structures */
 	for (i = 0; i < 3; i++) {
 		iov[i].iov_base = buf[i];
+		iov[i].iov_len = strlen(buf[i]) + 1;
 	}
 
-	iov[i].iov_len = strlen(buf[i]) + 1;
+
 	
 	/* with a single call, write them all out */
 	nr = writev (fd, iov, 3); 
@@ -37,7 +38,7 @@ int main(){
 		return 1; 
 	}
 
-	printf ("wrote %d bytes\n", nr);
+	printf ("wrote %ld bytes\n", nr);
 	
 	if (close (fd)) {
 		perror ("close");
