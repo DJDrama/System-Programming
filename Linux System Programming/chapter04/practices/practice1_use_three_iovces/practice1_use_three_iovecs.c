@@ -17,7 +17,7 @@ int main(){
 
 	fd = open ("buccaneer.txt", O_WRONLY | O_CREAT | O_TRUNC); 
 
-	if (fd == −1) {
+	if (fd == -1) {
 		perror ("open");
 		return 1; 
 	}
@@ -31,7 +31,7 @@ int main(){
 	
 	/* with a single call, write them all out */
 	nr = writev (fd, iov, 3); 
-	if (nr == −1) {
+	if (nr == -1) {
 		perror ("writev");
 		return 1; 
 	}
