@@ -4,6 +4,7 @@
 #include <fcntl.h> 
 #include <string.h>
 #include <sys/uio.h>
+#include <unistd.h> // for close
 
 int main(){
 	struct iovec iov[3];
