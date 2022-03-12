@@ -13,7 +13,7 @@ int get_block(int fd, int logical_block){
 	int ret;
 	ret = ioctl(fd, FIBMAP, &logical_block);
 	if(ret<0){
-		perror("ioctl")
+		perror("ioctl");
 		return -1;
 	}
 	return logical_block; // 물리 블록으로 반환.
