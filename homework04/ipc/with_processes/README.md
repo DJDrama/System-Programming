@@ -1,2 +1,2 @@
 ## :camera_flash: Screenshots
-<img src="screenshot.png" width="800">
+<img src="screenshot.png" width="1024">
