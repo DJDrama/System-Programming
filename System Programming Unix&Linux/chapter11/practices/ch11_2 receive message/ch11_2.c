@@ -21,3 +21,17 @@ int main(){
 	len = msgrcv(msgid, &inmsg, 80, 0, 0);
 	printf("Recevied MSG = %s, len=%d\n", inmsg.mtext, len);
 }
+
+/*
+# ipcs -q
+------ Message Queues --------
+key        msqid      owner      perms      used-bytes   messages    
+0xffffffff 1          dj         644        80           1       
+
+# ./a.out
+# ipcs -q  // messages turned to 0 from 1
+------ Message Queues --------
+key        msqid      owner      perms      used-bytes   messages    
+0xffffffff 1          dj         644        0            0     
+
+*/
