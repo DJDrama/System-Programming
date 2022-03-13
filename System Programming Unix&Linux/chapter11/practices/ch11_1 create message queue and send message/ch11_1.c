@@ -33,3 +33,20 @@ int main() {
 	}
 
 }
+
+/*
+$ ipcs -q
+------ Message Queues --------
+key        msqid      owner      perms      used-bytes   messages    
+
+$ ./a.out 
+$ ipcs -q
+------ Message Queues --------
+key        msqid      owner      perms      used-bytes   messages    
+0xffffffff 0          dj         644        80           1    
+
+$ ipcrm -q 0  // Remove Message Queue with msqid 0
+$ ipcs -q
+------ Message Queues --------
+key        msqid      owner      perms      used-bytes   messages    
+*/
