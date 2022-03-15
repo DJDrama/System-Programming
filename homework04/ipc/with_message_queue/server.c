@@ -16,7 +16,7 @@ int main(){
 
 	key = ftok("keyfile", 1);
 
-	msgid = msgget(key, IPC_CREAT | 0644);
+	msgid = msgget(key, IPC_CREAT | 0644); // 메시지 큐 식별자 리턴(음수가 아닌 정수), IPC_CREATE: 새로운 키면 식별자를 새로 생성,
 	if(msgid==-1){
 		perror("msgget");
 		exit(1);
