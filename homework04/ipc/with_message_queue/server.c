@@ -26,7 +26,10 @@ int main(){
 		exit(1);
 	}
 
-	msgrcv(msgid, &msg, sizeof(msg.text), 1, 0);
+	// (네번째 인자) msgtyp=1 -> msgtyp로 지정한 유형과 같은 메세지를 읽어온다(여기서는 1로 지정한).
+	// (다섯번째 인자) msgflg=0 -> 메세지 큐에 메세지가 올 때까지 기다린다.
+	// 수행 성공: 읽어온 메세지의 바이트 수를 리턴.
+	msgrcv(msgid, &msg, sizeof(msg.text), 1, 0); 
 	printf("From Client: %s\n", msg.text);
 
 	printf("To Client: ");
