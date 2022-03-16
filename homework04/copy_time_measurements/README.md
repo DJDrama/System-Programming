@@ -17,5 +17,6 @@
   - 약 0.0030000 seconds
 
 
-(순위 - Fastest)   
+
+# 순위 - Fastest   
 (Open, read) > Mmap > (Scattered, gathered(Vector)), (fgetc, fputc) > (fread, fwrite) > (fgets, fputs)   
