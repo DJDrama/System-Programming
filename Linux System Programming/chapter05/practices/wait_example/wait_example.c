@@ -11,8 +11,7 @@ int main(){
 	if(!fork())
 		return 1;
 
-	
-abort();
+
 	pid = wait(&status);
 	if(pid==-1)
 		perror("wait");
