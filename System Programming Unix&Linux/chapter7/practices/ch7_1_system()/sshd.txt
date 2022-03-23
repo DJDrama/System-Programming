@@ -1,0 +1,2 @@
+  501 38251 38250   0  3:18PM ttys000    0:00.00 sh -c ps -ef | grep sshd > sshd.txt
+  501 38253 38251   0  3:18PM ttys000    0:00.00 grep sshd
