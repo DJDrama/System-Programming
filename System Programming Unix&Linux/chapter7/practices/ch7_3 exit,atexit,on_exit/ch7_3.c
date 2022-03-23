@@ -16,7 +16,7 @@ int main(){
 	exit(0);
 }
 
-/*
+/* (함수가 예약 순서와 반대로 호출되었음)
 Cleanup 2 is called: 20.
 Clieanup 1 is called
 */
