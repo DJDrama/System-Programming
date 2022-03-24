@@ -6,6 +6,8 @@
 #include <unistd.h>
 #include <linux/fs.h>
 
+#define NR_OPEN 1024
+
 int main(void){
 	pid_t pid;
 	int i;
@@ -22,7 +24,7 @@ int main(void){
 	if(chdir("/")==-1)
 		return -1;
 
-	for(i=0; i<NR_OPEN; i++)
+	for(i=0; i< NR_OPEN; i++)
 		close(i);
 
 	open("/dev/null", O_RDWR);
