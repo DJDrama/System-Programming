@@ -1,4 +1,6 @@
 ## :camera_flash: Screenshots
+
+[O_CLOEXEC 없이 실행한 결과]
 <img src="screenshot.png" width="1024">
   
 1. 단순히 O_CLOEXEC 없이 실행한 결과, ./exec_file을 통해 exec_file을 실행하였을 때. 
