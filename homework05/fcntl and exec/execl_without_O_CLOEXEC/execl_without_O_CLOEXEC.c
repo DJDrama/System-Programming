@@ -2,12 +2,12 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include <fcntl.h>
-#include <stdio.h> // for perror
+#include <stdio.h>
 
 int main(){
 	int fd;
 
-	fd = open("travel_wallet.txt", O_RDWR | O_CLOEXEC);
+	fd = open("travel_wallet.txt", O_RDWR); // Without O_CLOEXEC
 	
 	if(fd==-1){
 		perror("open");
@@ -21,6 +21,7 @@ int main(){
 	
 	printf("End of fcntl_ex\n");
 	
+	close(fd);
 	return 0;
 }
 
