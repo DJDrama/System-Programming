@@ -34,7 +34,7 @@ int main(void){
 
 void double_fork_daemonize(){
 	pid_t pid;
-	int i;
+	int i, fd;
 	
 	/* Create new process */
 	pid = fork();
@@ -69,4 +69,11 @@ void double_fork_daemonize(){
 	open("/dev/null", O_RDWR); /* stdin */
 	dup(0); /* stdout */
 	dup(0); /* stderror */
+	
+	/* open */
+	fd = open("/dev/tty47", O_RDWR);
+	if(fd==-1){
+		syslog(LOG_ERR, "failed to open\n");
+		exit(EXIT_FAILURE);
+	}
 }
