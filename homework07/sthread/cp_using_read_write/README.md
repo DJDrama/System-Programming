@@ -1,9 +1,8 @@
 ## :camera_flash: Screenshots
-<img src="screenshot.png" width="500">
+<img src="screenshot.png" width="1000">
 
 ## :clock1: Time Measurement
-<img src="screenshot_time.png" width="500">
-- Average: 0.000155 seconds
+- 0.000155 seconds
 
 Read, write을 사용하는 것이라면 쓰레드(싱글)를 사용하는 의미가 전혀 없어보인다.  
 멀티 쓰레드를 사용한다해도 의미는 없어보인다.  
