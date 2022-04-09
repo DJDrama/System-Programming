@@ -17,7 +17,7 @@ typedef struct {
 void * copy(void *arg){
 	FILE_OPTIONS *file_options;
 	unsigned long size;
-	int rfd, wfd, n;
+	int rfd, wfd, n, red;
 	
 	file_options = (FILE_OPTIONS *) arg;
 	size = file_options->size;
@@ -37,12 +37,17 @@ void * copy(void *arg){
 		exit(1);
 	}
 	
-	/* read & write */
-	while((n=read(rfd, buf, size)) > 0){
-		if(write(wfd, buf, n)!=n)
-			perror("Write");
+	/* set file pointer */
+	lseek(rfd, file_options->offset, SEEK_SET);
+	lseek(wfd, file_options->offset, SEEK_SET);
+	
+	/* write */
+	while(n < size){
+		red = read(rfd, buf, size);
+		write(wfd, buf, red);
+		n += red;
 	}
-
+	
 	/* close fds */
 	close(rfd);
 	close(wfd);
