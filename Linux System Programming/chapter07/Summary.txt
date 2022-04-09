@@ -143,6 +143,8 @@
 	(7.7.2) Pthread API
 
 	(7.7.3) Pthread 링크하기
+		- libpthread 라이브러리는 분리되어 있으므로 링크를 해야 한다.
+			$ gcc -Wall -Werror -pthread {name}.c -o {name}
 
 	(7.7.4) 스레드 생성하기
 		- main() 함수 실행 시점: 싱글스레드
