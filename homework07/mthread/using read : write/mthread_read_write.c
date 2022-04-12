@@ -94,12 +94,13 @@ int main(int argc, char *argv[]){
 	
 	/* thread init & create */
 	printf("Number of Threads: %d\n", no_threads);
-	threads = malloc(sizeof(pthread_t) * no_threads);
+	threads = (pthread_t*) malloc(sizeof(pthread_t) * no_threads);
 
 	for(i=0; i<no_threads; i++){
 		int err = pthread_create(&threads[i], NULL, copy, (void*) &file_options[i]);
-		if(err){
+		if(!err){
 			printf("%d thread error: %d\n", i, err);
+			perror("pthread_create");
 			return -1;
 		}
 	}
