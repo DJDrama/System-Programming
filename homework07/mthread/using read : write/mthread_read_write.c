@@ -42,6 +42,7 @@ void * copy(void *arg){
 	lseek(wfd, file_options->offset, SEEK_SET);
 	
 	/* write */
+	n=0;
 	while(n < size){
 		red = read(rfd, buf, size);
 		write(wfd, buf, red);
@@ -61,6 +62,7 @@ int main(int argc, char *argv[]){
 	int no_threads;
 	int i;
 	unsigned long divided_size;
+	pthread_t *threads;
 	
 	/* init Clock */
 	t = clock();
@@ -91,16 +93,25 @@ int main(int argc, char *argv[]){
 	}
 	
 	/* thread init & create */
-	pthread_t threads[no_threads];
+	printf("Number of Threads: %d\n", no_threads);
+	threads = malloc(sizeof(pthread_t) * no_threads);
+
 	for(i=0; i<no_threads; i++){
-		pthread_create(&threads[i], NULL, copy, &file_options[i]);
+		int err = pthread_create(&threads[i], NULL, copy, (void*) &file_options[i]);
+		if(err){
+			printf("%d thread error: %d\n", i, err);
+			return -1;
+		}
 	}
 	
+
 	/* thread join */
 	for(i=0; i<no_threads; i++){
 			pthread_join(threads[i], NULL);
 	}
 	
+	free(threads);
+
 	/* time  measurement */
 	t = clock() - t;
 	double time_taken = ((double) t) / CLOCKS_PER_SEC;
