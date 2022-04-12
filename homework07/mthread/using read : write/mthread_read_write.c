@@ -8,6 +8,7 @@
 #include <unistd.h>
 
 typedef struct {
+	int id; // thread id
 	char *source;
 	char *dest;
 	unsigned long offset;
@@ -22,6 +23,7 @@ void * copy(void *arg){
 	file_options = (FILE_OPTIONS *) arg;
 	size = file_options->size;
 	char buf[size];
+	printf("id: %d, offset: %ld, size: %ld\n", file_options->id, file_options->offset, file_options->size);
 	
 	 /* open file for read */
   	rfd = open(file_options->source, O_RDONLY);
@@ -61,7 +63,7 @@ int main(int argc, char *argv[]){
 	struct stat statbuf;
 	int no_threads;
 	int i;
-	unsigned long divided_size;
+	unsigned long divided_size, offset;
 	pthread_t *threads;
 	
 	/* init Clock */
@@ -80,15 +82,18 @@ int main(int argc, char *argv[]){
 	/* FILE_OPTIONS init */
 	divided_size = statbuf.st_size / no_threads;
 	FILE_OPTIONS file_options[no_threads];
+	file_options[0].id = 0;
 	file_options[0].source = argv[1];
 	file_options[0].dest = argv[2];
 	file_options[0].offset = 0;
 	file_options[0].size = divided_size;
 	
 	for(i=1; i<no_threads; i++){
+		file_options[i].id = i;
 		file_options[i].source = argv[1];
 		file_options[i].dest = argv[2];
-		file_options[i].offset += file_options[i-1].size;
+		offset += file_options[i-1].size;
+		file_options[i].offset = offset;
 		file_options[i].size = divided_size;
 	}
 	
@@ -97,12 +102,7 @@ int main(int argc, char *argv[]){
 	threads = (pthread_t*) malloc(sizeof(pthread_t) * no_threads);
 
 	for(i=0; i<no_threads; i++){
-		int err = pthread_create(&threads[i], NULL, copy, (void*) &file_options[i]);
-		if(!err){
-			printf("%d thread error: %d\n", i, err);
-			perror("pthread_create");
-			return -1;
-		}
+		pthread_create(&threads[i], NULL, copy, (void*) &file_options[i]);
 	}
 	
 
