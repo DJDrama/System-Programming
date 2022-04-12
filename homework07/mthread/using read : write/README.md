@@ -1,5 +1,5 @@
 ## :camera_flash: Screenshots
-<img src="screenshot_linux.png" width="1000">
+<img src="screenshot.png" width="1000">
 
 ## :clock1: Time Measurement
 - 쓰레드 1개를 사용할 경우, 0.068320 sec
