@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <time.h>
+#include <sys/time.h>
 #include <fcntl.h>
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -16,14 +16,18 @@ typedef struct {
 } FILE_OPTIONS;
 
 void * copy(void *arg){
+	struct timeval t0, t1, dt;
 	FILE_OPTIONS *file_options;
 	unsigned long size;
 	int rfd, wfd, n, red;
 	
+	gettimeofday(&t0, NULL);
+	
 	file_options = (FILE_OPTIONS *) arg;
 	size = file_options->size;
-	char buf[size];
-	printf("id: %d, offset: %ld, size: %ld\n", file_options->id, file_options->offset, file_options->size);
+	
+	char *buf;
+	buf = (char *) malloc(sizeof(char)*size);
 	
 	 /* open file for read */
   	rfd = open(file_options->source, O_RDONLY);
@@ -51,23 +55,27 @@ void * copy(void *arg){
 		n += red;
 	}
 	
+	free(buf);
+	
 	/* close fds */
 	close(rfd);
 	close(wfd);
+	
+	gettimeofday(&t1, NULL);
+	timersub(&t1, &t0, &dt);
+	
+	printf("Time Measure: (thread: %d) took %ld.%06ld sec\n", file_options->id, dt.tv_sec, dt.tv_usec);
 	
 	return 0;
 }
 
 int main(int argc, char *argv[]){
-	clock_t t;
 	struct stat statbuf;
 	int no_threads;
 	int i;
 	unsigned long divided_size, offset;
 	pthread_t *threads;
-	
-	/* init Clock */
-	t = clock();
+
 	
 	/* Ask For Threads */
 	printf("How many threads do you want? ");
@@ -97,25 +105,36 @@ int main(int argc, char *argv[]){
 		file_options[i].size = divided_size;
 	}
 	
+
+	
 	/* thread init & create */
 	printf("Number of Threads: %d\n", no_threads);
-	threads = (pthread_t*) malloc(sizeof(pthread_t) * no_threads);
+	threads = malloc(sizeof(pthread_t) * no_threads);
+	if(threads == NULL){
+		perror("malloc");
+		return -1;
+	}
 
+	int err;
 	for(i=0; i<no_threads; i++){
-		pthread_create(&threads[i], NULL, copy, (void*) &file_options[i]);
+		if((err=pthread_create(&threads[i], NULL, copy, (void*) &file_options[i]))!=0){
+			perror("pthread_create");
+			return -1;
+		}
 	}
 	
 
 	/* thread join */
+	err=0;
 	for(i=0; i<no_threads; i++){
-			pthread_join(threads[i], NULL);
+		if((err = pthread_join(threads[i], NULL)) !=0 ){
+			perror("pthread_join");
+			return -1;
+		}
 	}
+	
 	
 	free(threads);
 
-	/* time  measurement */
-	t = clock() - t;
-	double time_taken = ((double) t) / CLOCKS_PER_SEC;
-	printf("Took %f seconds to execute\n", time_taken);
 	return 0;
 }
