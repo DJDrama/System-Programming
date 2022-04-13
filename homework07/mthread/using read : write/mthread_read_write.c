@@ -65,7 +65,7 @@ void * copy(void *arg){
 
 int main(int argc, char *argv[]){
 	struct timeval start, end;
-	struct stat statbuf;
+	struct stat statbuf, stat_copied;
 	int no_threads;
 	int i;
 	unsigned long divided_size, offset;
@@ -131,6 +131,13 @@ int main(int argc, char *argv[]){
 	
 	
 	free(threads);
+	
+	/* get copied file size */
+  	if(stat(argv[2], &stat_copied)==-1){
+  		perror("stat");
+  		return -1;
+  	}
+	printf("original size: %ld, copied size: %ld\n", statbuf.st_size, stat_copied.st_size);
 
 	gettimeofday(&end, NULL);
 	long seconds = (end.tv_sec - start.tv_sec);
