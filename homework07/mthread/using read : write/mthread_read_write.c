@@ -70,12 +70,14 @@ void * copy(void *arg){
 }
 
 int main(int argc, char *argv[]){
+	struct timeval start, end;
 	struct stat statbuf;
 	int no_threads;
 	int i;
 	unsigned long divided_size, offset;
 	pthread_t *threads;
 
+	gettimeofday(&start, NULL);
 	
 	/* Ask For Threads */
 	printf("How many threads do you want? ");
@@ -136,5 +138,9 @@ int main(int argc, char *argv[]){
 	
 	free(threads);
 
+	gettimeofday(&end, NULL);
+	long seconds = (end.tv_sec - start.tv_sec);
+	long micros = ((seconds * 1000000) + end.tv_usec) - (start.tv_usec);
+	printf("Elapsed Time: %ld seconds and %ld micros\n", seconds, micros);
 	return 0;
 }
