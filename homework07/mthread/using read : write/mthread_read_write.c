@@ -19,7 +19,7 @@ void * copy(void *arg){
 	struct timeval t0, t1, dt;
 	FILE_OPTIONS *file_options;
 	unsigned long size;
-	int rfd, wfd, n, red;
+	int rfd, wfd;
 	
 	gettimeofday(&t0, NULL);
 	
@@ -43,17 +43,11 @@ void * copy(void *arg){
 		exit(1);
 	}
 	
-	/* set file pointer */
-	lseek(rfd, file_options->offset, SEEK_SET);
-	lseek(wfd, file_options->offset, SEEK_SET);
+	/* pread */
+	pread(rfd, buf, size, file_options->offset);
 	
-	/* write */
-	n=0;
-	while(n < size){
-		red = read(rfd, buf, size);
-		write(wfd, buf, red);
-		n += red;
-	}
+	/* pwrite */
+	pwrite(wfd, buf, size, file_options->offset);
 	
 	free(buf);
 	
