@@ -6,7 +6,7 @@ fun printSeparator() {
 
 fun main() = runBlocking {
     cancelExample()
-
+    printSeparator()
     cancellationCooperativeExample()
     printSeparator()
     cancellableCooperativeExample()
@@ -18,6 +18,10 @@ fun main() = runBlocking {
     //timeOut()
     printSeparator()
     timeOutWithoutException()
+    printSeparator()
+    asynchronousTimeoutAndResources()
+    printSeparator()
+    asynchronousTimeoutAndResourcesSafely()
 }
 
 suspend fun cancelExample() = coroutineScope {
@@ -144,4 +148,57 @@ suspend fun timeOutWithoutException() = coroutineScope {
         "Done" // will get cancelled before it produces this result
     }
     println("Result is $result")
+}
+
+/* Asynchronous timeout and resources */
+// withTimeout is asynchronous with respect to the code running in its block and may happen at any time,
+// even right before the return from inside of the timeout block
+var acquired = 0
+
+class Resource {
+    init {
+        acquired++
+    }
+
+    fun close() {
+        acquired--
+    }
+}
+
+// result may not be zero, since it may depend on the timings of our machine
+suspend fun asynchronousTimeoutAndResources() {
+    runBlocking {
+        repeat(100_000) { // Launch 100K coroutines
+            launch {
+                val resource = withTimeout(60) { // Timeout of 60ms
+                    delay(50) // Delay for 50ms
+                    Resource() // Acquire a resource and return it from withTimeout block
+                }
+                resource.close() // Release the resource
+            }
+        }
+    }
+    // Outside of runBlocking all coroutines have completed
+    println(acquired) // Print the number of resources still acquired
+}
+
+// Always print zero, Resources do not leak!
+suspend fun asynchronousTimeoutAndResourcesSafely() {
+    runBlocking {
+        repeat(100_000) { // Launch 100K coroutines
+            launch {
+                var resource: Resource? = null
+                try {
+                    withTimeout(60) { // Timeout of 60ms
+                        delay(50) // Delay for 50ms
+                        resource = Resource() // Acquire a resource and return it from withTimeout block
+                    }
+                } finally {
+                    resource?.close() // Release the resource
+                }
+            }
+        }
+    }
+    // Outside of runBlocking all coroutines have completed
+    println(acquired) // Print the number of resources still acquired
 }
