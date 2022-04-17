@@ -1,9 +1,5 @@
 import kotlinx.coroutines.*
 
-fun printSeparator() {
-    println("====================================================================")
-}
-
 fun main() = runBlocking {
     cancelExample()
     printSeparator()
